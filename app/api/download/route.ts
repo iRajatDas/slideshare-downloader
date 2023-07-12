@@ -1,21 +1,21 @@
-import { NextResponse } from "next/server";
-import fetch from "isomorphic-fetch";
-import { load } from "cheerio";
+import { NextResponse } from 'next/server';
+import fetch from 'isomorphic-fetch';
+import { load } from 'cheerio';
 
-interface SlideDownloaderRequest {
+export interface SlideItem {
   url: string;
 }
 
 export async function POST(request: Request) {
-  const { url }: Partial<SlideDownloaderRequest> = await request.json();
+  const { url }: Partial<SlideItem> = await request.json();
 
   console.log(url);
 
-  if (!url) return NextResponse.json({ message: "url param missing" });
+  if (!url) return NextResponse.json({ message: 'url param missing' });
 
   const data = await sliderDownloader(url);
 
-  return NextResponse.json({ data: data });
+  return NextResponse.json({ slides: data });
 }
 
 const sliderDownloader = async (url: string) => {
@@ -34,12 +34,12 @@ const sliderDownloader = async (url: string) => {
 
   if (!fullscreenWrapper.length || !slideImages.length) {
     return NextResponse.json({
-      message: "Fullscreen wrapper or slide images not found",
+      message: 'Fullscreen wrapper or slide images not found',
     });
   }
 
   // Extract the image URLs
-  const imageUrls = slideImages.map((_, image) => $(image).attr("src")).get();
+  const imageUrls = slideImages.map((_, image) => $(image).attr('src')).get();
 
   // Log the image URLs
   return imageUrls;

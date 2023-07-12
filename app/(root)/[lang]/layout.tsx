@@ -20,11 +20,11 @@ export default function RootLayout({
   return (
     <html lang={params.lang ?? defaultLocale}>
       <body className={inter.className}>
-        <div className="flex flex-col h-full min-h-full">
-          <Header className="container shrink-0" />
-          <main className="container flex-1 bg-white">{children}</main>
-          <Footer className="container shrink-0" />
-        </div>
+          <div className="flex flex-col h-full min-h-full">
+            <Header className="container shrink-0" />
+            <main className="container flex-1 bg-white">{children}</main>
+            <Footer className="container shrink-0" />
+          </div>
       </body>
     </html>
   );
