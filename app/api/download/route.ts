@@ -9,8 +9,6 @@ export interface SlideItem {
 export async function POST(request: Request) {
   const { url }: Partial<SlideItem> = await request.json();
 
-  console.log(url);
-
   if (!url) return NextResponse.json({ message: 'url param missing' });
 
   const data = await sliderDownloader(url);
