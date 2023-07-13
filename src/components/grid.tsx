@@ -5,9 +5,6 @@ import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
-import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const DataGrid = () => {
   const slides = useSlideFormStore((state) => state.slides);
