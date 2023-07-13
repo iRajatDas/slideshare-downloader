@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { dictionary } from '@/content';
 import SlideForm from '@/components/form';
-import { useSlideFormStore } from '@/src/lib/store';
 import DataGrid from '@/components/grid';
+import GuideSection from '@/components/section/guide';
 
 const _getSlides = async (url: string) => {
   const slides = await axios.post('/api/download', { url: url });
@@ -25,6 +25,7 @@ async function Page({ params }: { params: { lang: string } }) {
       <section>
         <DataGrid />
       </section>
+      <GuideSection />
     </div>
   );
 }

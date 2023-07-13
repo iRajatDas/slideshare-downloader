@@ -21,9 +21,9 @@ export default function RootLayout({
     <html lang={params.lang ?? defaultLocale}>
       <body className={inter.className}>
           <div className="flex flex-col h-full min-h-full">
-            <Header className="container shrink-0" />
-            <main className="container flex-1 bg-white">{children}</main>
-            <Footer className="container shrink-0" />
+            <Header className="w-full max-w-6xl shrink-0" />
+            <main className="mx-auto max-w-6xl flex-1 bg-white">{children}</main>
+            <Footer className="mx-auto max-w-6xl shrink-0" />
           </div>
       </body>
     </html>
