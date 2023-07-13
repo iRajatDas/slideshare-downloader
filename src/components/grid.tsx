@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DataGrid = () => {
   const slides = useSlideFormStore((state) => state.slides);
@@ -30,6 +31,7 @@ const DataGrid = () => {
   if (data.length <= 0) return null;
 
   const singleSlideDownload = (url: string) => {
+    console.log(url)
     const link = document.createElement('a');
     link.href = url;
     link.target = '_blank';
@@ -38,56 +40,65 @@ const DataGrid = () => {
   };
 
   return (
-    <section className='px-4'>
+    <section className="px-4">
       <div className="flex items-center"></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
-        {data.map((slide: string) => (
-          <div className="space-y-2" key={slide}>
-            <div
-              className={`cursor-pointer rounded-lg relative overflow-hidden focus-visible:ring-0 focus-visible:border-none ${
-                selectedItems.includes(slide)
-                  ? 'ring-4 focus:ring-4 focus:outline-none ring-primary-brand'
-                  : 'ring-0'
-              }`}
-              onClick={() => handleItemClick(slide)}
-              role="button"
-              tabIndex={0}
+        <AnimatePresence>
+          {data.map((slide: string, index) => (
+            <motion.div
+              key={slide}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="space-y-2"
             >
               <div
-                className={cn(
-                  `absolute inset-0 opacity-0 pointer-events-none`,
-                  'transition-all duration-300 ease-in-out',
-                  selectedItems.includes(slide) && 'opacity-100',
-                )}
+                className={`cursor-pointer rounded-lg relative overflow-hidden focus-visible:ring-0 focus-visible:border-none ${
+                  selectedItems.includes(slide)
+                    ? 'ring-4 focus:ring-4 focus:outline-none ring-primary-brand'
+                    : 'ring-0'
+                }`}
+                onClick={() => handleItemClick(slide)}
+                role="button"
+                tabIndex={0}
               >
-                <div className="h-full w-full relative">
-                  <div
-                    className={cn(
-                      'h-8 w-8 absolute right-2 top-2 bg-primary-brand rounded-full grid place-items-center border-white border-2 opacity-0',
-                      'transition-all duration-500 ease-in-out',
-                      selectedItems.includes(slide) && 'opacity-100',
-                    )}
-                  >
-                    <Check className="h-5 w-5 text-white stroke-[4]" />
+                <div
+                  className={cn(
+                    `absolute inset-0 opacity-0 pointer-events-none`,
+                    'transition-all duration-300 ease-in-out',
+                    selectedItems.includes(slide) && 'opacity-100',
+                  )}
+                >
+                  <div className="h-full w-full relative">
+                    <div
+                      className={cn(
+                        'h-8 w-8 absolute right-2 top-2 bg-primary-brand rounded-full grid place-items-center border-white border-2 opacity-0',
+                        'transition-all duration-500 ease-in-out',
+                        selectedItems.includes(slide) && 'opacity-100',
+                      )}
+                    >
+                      <Check className="h-5 w-5 text-white stroke-[4]" />
+                    </div>
                   </div>
                 </div>
+                <Image
+                  height={700}
+                  width={700}
+                  src={slide}
+                  className="h-auto max-w-full rounded-lg"
+                  alt=""
+                />
               </div>
-              <Image
-                height={700}
-                width={700}
-                src={slide}
-                className="h-auto max-w-full rounded-lg"
-                alt=""
-              />
-            </div>
-            <Button
-              className="bg-primary-brand w-full hover:bg-primary-brand/90"
-              onClick={() => singleSlideDownload(slide)}
-            >
-              Download
-            </Button>
-          </div>
-        ))}
+              <Button
+                className="bg-primary-brand w-full hover:bg-primary-brand/90"
+                onClick={() => singleSlideDownload(slide)}
+              >
+                Download
+              </Button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </section>
   );

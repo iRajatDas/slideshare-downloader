@@ -28,6 +28,7 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
     "file-saver": "^2.0.5",
+    "framer-motion": "^10.12.20",
     "isomorphic-fetch": "^3.0.0",
     "lucide-react": "^0.259.0",
     "negotiator": "^0.6.3",
