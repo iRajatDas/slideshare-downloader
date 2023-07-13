@@ -4,6 +4,7 @@ import SlideForm from '@/components/form';
 import DataGrid from '@/components/grid';
 import GuideSection from '@/components/section/guide';
 import Features from '@/components/section/features';
+import StorySection from '@/components/section/story';
 
 const _getSlides = async (url: string) => {
   const slides = await axios.post('/api/download', { url: url });
@@ -26,6 +27,7 @@ async function Page({ params }: { params: { lang: string } }) {
       <DataGrid />
       <GuideSection />
       <Features />
+      <StorySection />
     </div>
   );
 }
