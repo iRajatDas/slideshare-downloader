@@ -18,17 +18,15 @@ const GuideItem: React.FC<GuideItemProps> = ({
   description,
 }) => {
   return (
-    <div className="space-y-6 flex flex-col items-center">
+    <div className="space-y-4 md:space-y-6 flex flex-col items-center py-6">
       <Image
         alt={alt}
         src={imageSrc}
         height={200}
         width={200}
-        className="h-28 w-44 object-cover"
+        className="h-28 w-28 md:w-36 object-cover"
       />
-      <h3 className="text-lg text-center sm:text-xl font-medium">
-        {heading}
-      </h3>
+      <h3 className="text-lg text-center sm:text-xl font-medium">{heading}</h3>
       <p className="text-center text-xs md:text-sm">{description}</p>
     </div>
   );
@@ -36,7 +34,7 @@ const GuideItem: React.FC<GuideItemProps> = ({
 
 const GuideSection: React.FC = () => {
   return (
-    <section className="bg-gray-100 py-12 rounded-lg">
+    <section className="bg-gray-100 rounded-lg">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-8 px-4 md:px-8">
         <GuideItem
           imageSrc={copy}
