@@ -4,11 +4,11 @@ type FooterProps = HTMLProps<HTMLElement>;
 
 const Footer: FC<FooterProps> = (props) => {
   return (
-    <header className="bg-gray-100">
+    <footer className="bg-gray-100">
       <nav className="py-16" {...props}>
         Footer
       </nav>
-    </header>
+    </footer>
   );
 };
 

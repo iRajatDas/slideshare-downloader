@@ -64,7 +64,7 @@ const SlideForm: FC<SlideFormProps> = ({}) => {
   return (
     <Form {...form}>
       <form
-        className="py-6 space-y-4 mx-auto max-w-2xl"
+        className="py-6 space-y-4 mx-auto max-w-2xl px-4"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField

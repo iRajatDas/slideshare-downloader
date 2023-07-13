@@ -22,9 +22,7 @@ async function Page({ params }: { params: { lang: string } }) {
         </p>
         <SlideForm />
       </section>
-      <section>
-        <DataGrid />
-      </section>
+      <DataGrid />
       <GuideSection />
     </div>
   );
