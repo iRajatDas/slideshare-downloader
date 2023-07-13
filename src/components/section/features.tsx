@@ -1,8 +1,14 @@
+'use client';
+
+import { useSlideFormStore } from '@/src/lib/store';
 import React from 'react';
 
 const Features = () => {
+  const { slides } = useSlideFormStore();
+
+  if (slides.length > 0) return null;
   return (
-    <section className="py-12">
+    <section className="py-12 px-4">
       <div className="space-y-6 sm:space-y-12">
         <div className="space-y-2 text-center">
           <h2 className="font-semibold text-2xl md:text-3xl tracking-tight">

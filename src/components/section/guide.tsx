@@ -1,8 +1,10 @@
+'use client';
 import React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import copy from '@/public/copy-url.gif';
 import paste from '@/public/paste-url.gif';
 import download from '@/public/download-success.gif';
+import { useSlideFormStore } from '@/src/lib/store';
 
 interface GuideItemProps {
   imageSrc: StaticImageData;
@@ -33,6 +35,10 @@ const GuideItem: React.FC<GuideItemProps> = ({
 };
 
 const GuideSection: React.FC = () => {
+  const { slides } = useSlideFormStore();
+
+  if (slides.length > 0) return null;
+
   return (
     <section className="bg-gray-100 rounded-lg">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-8 px-4 md:px-8">
