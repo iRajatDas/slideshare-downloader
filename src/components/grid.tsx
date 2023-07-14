@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useSlideFormStore } from '@/src/lib/store';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getImageData } from '../lib/utils';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { jsPDF } from 'jspdf';
 
 const DataGrid = () => {
   const slides = useSlideFormStore((state) => state.slides);
@@ -31,12 +32,39 @@ const DataGrid = () => {
   if (data.length <= 0) return null;
 
   const singleSlideDownload = (url: string) => {
-    console.log(url)
+    console.log(url);
     const link = document.createElement('a');
     link.href = url;
     link.target = '_blank';
     link.setAttribute('download', 'slide.pdf');
     link.click();
+  };
+
+  const handleConvertToPdf = async (url: string) => {
+    const pdf = new jsPDF('portrait', 'px', 'a4');
+    try {
+      const { dataURL, width, height } = await getImageData(url);
+      console.log(width, height);
+
+      const aspectRatio = width / height;
+      let pdfWidth = pdf.internal.pageSize.getWidth() - 40; // Subtracting 40px for left and right margins
+      let pdfHeight = pdfWidth / aspectRatio;
+
+      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
+        const scaleFactor = pdf.internal.pageSize.getHeight() / pdfHeight;
+        pdfHeight = pdf.internal.pageSize.getHeight();
+        pdfWidth *= scaleFactor;
+      }
+
+      // Calculate the center position to horizontally and vertically position the image
+      const marginLeft = (pdf.internal.pageSize.getWidth() - pdfWidth) / 2;
+      const marginTop = (pdf.internal.pageSize.getHeight() - pdfHeight) / 2;
+
+      pdf.addImage(dataURL, 'JPEG', marginLeft, marginTop, pdfWidth, pdfHeight);
+      pdf.save('converted.pdf');
+    } catch (error) {
+      console.error('Failed to convert to PDF:', error);
+    }
   };
 
   return (
@@ -92,7 +120,7 @@ const DataGrid = () => {
               </div>
               <Button
                 className="bg-primary-brand w-full hover:bg-primary-brand/90"
-                onClick={() => singleSlideDownload(slide)}
+                onClick={() => handleConvertToPdf(slide)}
               >
                 Download
               </Button>
