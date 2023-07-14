@@ -33,6 +33,7 @@ const DataGrid = () => {
   const [data, setData] = useState<Slide[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setData(slides);
@@ -62,6 +63,13 @@ const DataGrid = () => {
   };
 
   const handleDownloadAll = async () => {
+    if (selectedItems.length === 0) {
+      console.error('No items selected');
+      return;
+    }
+
+    setIsLoading(true);
+
     const toastId = toast({
       itemID: 'td',
       variant: 'default',
@@ -85,24 +93,27 @@ const DataGrid = () => {
     );
 
     // Perform the download operation for all selected slides
-
-    console.log(imagesToDownload);
-
-    await handleConvertToPdfMultiple(imagesToDownload);
-
-    toastId.update({
-      id: 'td',
-      variant: 'default',
-      title: 'File Downloaded',
-      description: 'Check your Download folder to find the file.',
-    });
+    try {
+      console.log(imagesToDownload);
+      await handleConvertToPdfMultiple(imagesToDownload);
+      toastId.update({
+        id: 'td',
+        variant: 'default',
+        title: 'File Downloaded',
+        description: 'Check your Download folder to find the file.',
+      });
+    } catch (error) {
+      console.error('Failed to convert to PDF:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!data || data.length === 0) return null;
 
   return (
     <section className="px-4 space-y-4">
-      <div className="flex items-center py-6 border">
+      <div className="flex items-center py-6 border px-4">
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -117,8 +128,9 @@ const DataGrid = () => {
         <Button
           className="ml-auto bg-primary-brand hover:bg-primary-brand/90"
           onClick={handleDownloadAll}
+          disabled={isLoading || selectedItems.length === 0}
         >
-          Download All Slides
+          {isLoading ? 'Downloading...' : 'Download All Slides'}
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
@@ -174,8 +186,9 @@ const DataGrid = () => {
                 onClick={() =>
                   handleConvertToPdfSingle(slide.images[2048]?.image as string)
                 }
+                disabled={isLoading}
               >
-                Download
+                {isLoading ? 'Downloading...' : 'Download'}
               </Button>
             </motion.div>
           ))}
