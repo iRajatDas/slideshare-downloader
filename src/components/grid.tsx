@@ -6,7 +6,12 @@ import { Check } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { handleConvertToPdfSingle } from '@/src/lib/pdf';
+import {
+  handleConvertToPdfMultiple,
+  handleConvertToPdfSingle,
+} from '@/src/lib/pdf';
+import { toast } from './ui/use-toast';
+import { ToastAction } from '@radix-ui/react-toast';
 
 interface Slide {
   slug: string;
@@ -27,6 +32,7 @@ const DataGrid = () => {
   const slides = useSlideFormStore((state) => state.slides);
   const [data, setData] = useState<Slide[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     setData(slides);
@@ -44,12 +50,77 @@ const DataGrid = () => {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectAll) {
+      // Deselect all slides
+      setSelectedItems([]);
+    } else {
+      // Select all slides
+      setSelectedItems(data.map((slide) => slide.original));
+    }
+    setSelectAll((prevSelectAll) => !prevSelectAll);
+  };
+
+  const handleDownloadAll = async () => {
+    const toastId = toast({
+      itemID: 'td',
+      variant: 'default',
+      title: 'Please wait',
+      description: 'We are processing your request.',
+    });
+
+    // Get the images to download for all selected slides
+    const imagesToDownload: string[] = selectedItems.reduce(
+      (acc: string[], slide: string) => {
+        const selectedSlide = data.find((item) => item.original === slide);
+        if (selectedSlide) {
+          const imageToDownload = selectedSlide.images[638]?.image as string;
+          if (imageToDownload) {
+            acc.push(imageToDownload);
+          }
+        }
+        return acc;
+      },
+      [],
+    );
+
+    // Perform the download operation for all selected slides
+
+    console.log(imagesToDownload);
+
+    await handleConvertToPdfMultiple(imagesToDownload);
+
+    toastId.update({
+      id: 'td',
+      variant: 'default',
+      title: 'File Downloaded',
+      description: 'Check your Download folder to find the file.',
+    });
+  };
+
   if (!data || data.length === 0) return null;
-  console.log(data);
 
   return (
-    <section className="px-4">
-      <div className="flex items-center"></div>
+    <section className="px-4 space-y-4">
+      <div className="flex items-center py-6 border">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={selectAll}
+            onChange={handleSelectAll}
+            className="rounded border-gray-300 text-primary-brand focus:ring-primary-brand"
+          />
+          <span>
+            {selectedItems.length} / {data.length} selected
+          </span>
+        </label>
+        <Button
+          className="ml-auto bg-primary-brand hover:bg-primary-brand/90"
+          onClick={handleDownloadAll}
+        >
+          Download All Slides
+        </Button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
         <AnimatePresence>
           {data.map((slide: Slide, index) => (
