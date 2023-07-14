@@ -6,8 +6,23 @@ export interface SlideItem {
   url: string;
 }
 
+interface SlideImage {
+  resolution: string;
+  image: string;
+}
+
+interface SlideImages {
+  [resolution: string]: SlideImage;
+}
+
+interface Slide {
+  slug: string;
+  original: string;
+  images: SlideImages;
+}
+
 const URL_REGEX =
-  /^https:\/\/www\.slideshare\.net\/[\w-]+\/[\w-]+(\/[\w-]+)*(\/\?.*)?$/;
+  /^https:\/\/www\.slideshare\.net\/[\w-]+(\/[\w-]+)*(\/)?(\?.*)?$/;
 
 export async function POST(request: Request) {
   const { url }: Partial<SlideItem> = await request.json();
@@ -17,15 +32,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Invalid URL' });
 
   try {
-    const data = await sliderDownloader(url);
-    return NextResponse.json({ slides: data });
+    const slides: Slide[] = await sliderDownloader(url);
+    return NextResponse.json({ slides });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Error fetching slides', slides: [] });
   }
 }
 
-const sliderDownloader = async (url: string) => {
+const sliderDownloader = async (url: string): Promise<Slide[]> => {
   try {
     // Send a GET request to the URL
     const response = await fetch(url);
@@ -33,6 +48,9 @@ const sliderDownloader = async (url: string) => {
 
     // Load the HTML content using Cheerio
     const $ = load(html);
+
+    // Extract the slug from the URL
+    const slug = (url.match(URL_REGEX) || [])[1]!!.replace('/', '') || 'slidershare-slide-item';
 
     // Find the fullscreen-wrapper element
     const fullscreenWrapper = $('[data-testid="fullscreen-wrapper"]');
@@ -44,22 +62,51 @@ const sliderDownloader = async (url: string) => {
       return [];
     }
 
-    // Transform the image URLs
-    const imageUrls = slideImages
+    // Transform the image URLs and create slide objects
+    const slides: Slide[] = slideImages
       .map((_, image) => {
-        const imageUrl = $(image).attr('src') as string; // Type assertion
-        const transformedUrl = imageUrl
-          .replace(/\/\d{2}\//, '/75/')
-          .replace('-320.jpg', '-2048.jpg');
-        return transformedUrl;
-      })
-      .get();
+        const imageUrl = $(image).attr('src') as string;
 
-    // Return the transformed image URLs
-    return imageUrls;
+        // Find the corresponding <source> tag with the slide image
+        const sourceTag = $(image).siblings(
+          '[data-testid="slide-image-source"]',
+        );
+
+        // Extract the image links from the srcset attribute of the source tag
+        const imageSrcset = sourceTag.attr('srcset') as string;
+
+        // Extract the different resolution image links from the srcset attribute
+        const imageLinks: SlideImage[] = imageSrcset.split(',').map((src) => {
+          const [imageLink, resolution] = src.trim().split(' ');
+          const resolutionName = resolution!!.replace('w', '');
+
+          return {
+            resolution: resolutionName,
+            image: imageLink || '',
+          };
+        });
+
+        // Create an object to store the image URLs
+        const images: SlideImages = {};
+
+        // Assign the image URLs to the respective resolution properties
+        imageLinks.forEach((link) => {
+          const { resolution, image } = link;
+          images[resolution] = { resolution, image };
+        });
+
+        return {
+          slug,
+          original: imageUrl,
+          images,
+        };
+      })
+      .get() as Slide[];
+
+    // Return the slide objects
+    return slides;
   } catch (error) {
     console.error(error);
     return [];
   }
 };
-

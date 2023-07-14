@@ -6,7 +6,8 @@ import React from 'react';
 const Features = () => {
   const { slides } = useSlideFormStore();
 
-  if (slides.length > 0) return null;
+    if (typeof slides !== 'undefined' && slides.length > 0) return null;
+
   return (
     <section className="py-12 px-4">
       <div className="space-y-6 sm:space-y-12">

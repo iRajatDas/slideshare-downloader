@@ -7,7 +7,18 @@ interface SlideFormStore {
 }
 
 interface Slide {
-  url: string;
+  slug: string;
+  original: string;
+  images: SlideImages;
+}
+
+interface SlideImages {
+  [resolution: string]: SlideImage;
+}
+
+interface SlideImage {
+  resolution: string;
+  image: string;
 }
 
 export const useSlideFormStore = create<SlideFormStore>((set) => ({

@@ -7,7 +7,8 @@ import { useSlideFormStore } from '@/src/lib/store';
 const StorySection = () => {
   const { slides } = useSlideFormStore();
 
-  if (slides.length > 0) return null;
+  if (typeof slides !== "undefined" && slides.length > 0) return null;
+
 
   return (
     <section className="px-4 py-12 rounded-lg bg-gray-100 md:px-8">

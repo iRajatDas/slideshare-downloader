@@ -3,14 +3,29 @@ import React, { useEffect, useState } from 'react';
 import { useSlideFormStore } from '@/src/lib/store';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
-import { cn, getImageData } from '../lib/utils';
+import { cn } from '@/src/lib/utils';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { jsPDF } from 'jspdf';
+import { handleConvertToPdfSingle } from '@/src/lib/pdf';
+
+interface Slide {
+  slug: string;
+  original: string;
+  images: SlideImages;
+}
+
+interface SlideImages {
+  [resolution: string]: SlideImage;
+}
+
+interface SlideImage {
+  resolution: string;
+  image: string;
+}
 
 const DataGrid = () => {
   const slides = useSlideFormStore((state) => state.slides);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Slide[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   useEffect(() => {
@@ -29,52 +44,17 @@ const DataGrid = () => {
     }
   };
 
-  if (data.length <= 0) return null;
-
-  const singleSlideDownload = (url: string) => {
-    console.log(url);
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.setAttribute('download', 'slide.pdf');
-    link.click();
-  };
-
-  const handleConvertToPdf = async (url: string) => {
-    const pdf = new jsPDF('portrait', 'px', 'a4');
-    try {
-      const { dataURL, width, height } = await getImageData(url);
-      console.log(width, height);
-
-      const aspectRatio = width / height;
-      let pdfWidth = pdf.internal.pageSize.getWidth() - 40; // Subtracting 40px for left and right margins
-      let pdfHeight = pdfWidth / aspectRatio;
-
-      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
-        const scaleFactor = pdf.internal.pageSize.getHeight() / pdfHeight;
-        pdfHeight = pdf.internal.pageSize.getHeight();
-        pdfWidth *= scaleFactor;
-      }
-
-      // Calculate the center position to horizontally and vertically position the image
-      const marginLeft = (pdf.internal.pageSize.getWidth() - pdfWidth) / 2;
-      const marginTop = (pdf.internal.pageSize.getHeight() - pdfHeight) / 2;
-
-      pdf.addImage(dataURL, 'JPEG', marginLeft, marginTop, pdfWidth, pdfHeight);
-      pdf.save('converted.pdf');
-    } catch (error) {
-      console.error('Failed to convert to PDF:', error);
-    }
-  };
+  if (!data || data.length === 0) return null;
+  console.log(data);
 
   return (
     <section className="px-4">
       <div className="flex items-center"></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
         <AnimatePresence>
-          {data.map((slide: string, index) => (
+          {data.map((slide: Slide, index) => (
             <motion.div
-              key={slide}
+              key={index}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -83,19 +63,19 @@ const DataGrid = () => {
             >
               <div
                 className={`cursor-pointer rounded-lg relative overflow-hidden focus-visible:ring-0 focus-visible:border-none ${
-                  selectedItems.includes(slide)
+                  selectedItems.includes(slide.original)
                     ? 'ring-4 focus:ring-4 focus:outline-none ring-primary-brand'
                     : 'ring-0'
                 }`}
-                onClick={() => handleItemClick(slide)}
+                onClick={() => handleItemClick(slide.original)}
                 role="button"
                 tabIndex={0}
               >
                 <div
                   className={cn(
-                    `absolute inset-0 opacity-0 pointer-events-none`,
+                    'absolute inset-0 opacity-0 pointer-events-none',
                     'transition-all duration-300 ease-in-out',
-                    selectedItems.includes(slide) && 'opacity-100',
+                    selectedItems.includes(slide.original) && 'opacity-100',
                   )}
                 >
                   <div className="h-full w-full relative">
@@ -103,7 +83,7 @@ const DataGrid = () => {
                       className={cn(
                         'h-8 w-8 absolute right-2 top-2 bg-primary-brand rounded-full grid place-items-center border-white border-2 opacity-0',
                         'transition-all duration-500 ease-in-out',
-                        selectedItems.includes(slide) && 'opacity-100',
+                        selectedItems.includes(slide.original) && 'opacity-100',
                       )}
                     >
                       <Check className="h-5 w-5 text-white stroke-[4]" />
@@ -113,14 +93,16 @@ const DataGrid = () => {
                 <Image
                   height={700}
                   width={700}
-                  src={slide}
+                  src={slide.images[638]?.image as string}
                   className="h-auto max-w-full rounded-lg"
                   alt=""
                 />
               </div>
               <Button
                 className="bg-primary-brand w-full hover:bg-primary-brand/90"
-                onClick={() => handleConvertToPdf(slide)}
+                onClick={() =>
+                  handleConvertToPdfSingle(slide.images[2048]?.image as string)
+                }
               >
                 Download
               </Button>

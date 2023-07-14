@@ -37,7 +37,7 @@ const GuideItem: React.FC<GuideItemProps> = ({
 const GuideSection: React.FC = () => {
   const { slides } = useSlideFormStore();
 
-  if (slides.length > 0) return null;
+  if (typeof slides !== 'undefined' && slides.length > 0) return null;
 
   return (
     <section className="bg-gray-100 rounded-lg">

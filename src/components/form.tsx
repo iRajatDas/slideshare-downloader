@@ -17,6 +17,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSlideFormStore } from '../lib/store';
+import { ToastAction } from '@radix-ui/react-toast';
+import { toast } from './ui/use-toast';
 
 interface SlideFormProps {}
 
@@ -25,14 +27,6 @@ const formSchema = z.object({
 });
 
 type FormType = z.infer<typeof formSchema>;
-
-type Slide = {
-  url: string;
-};
-
-type Slides = {
-  slides: Slide[];
-};
 
 const SlideForm: FC<SlideFormProps> = ({}) => {
   const zSlides = useSlideFormStore((state) => state.slides);
@@ -47,16 +41,22 @@ const SlideForm: FC<SlideFormProps> = ({}) => {
   });
 
   const onSubmit = async ({ url }: FormType) => {
-    zSlides.length > 0 && clearSlides();
+    zSlides?.length > 0 && clearSlides();
     try {
-      const response: AxiosResponse<Slides> = await axios.post(
-        '/api/download',
-        { url },
-      );
+      const response = await axios.post('/api/download', { url });
       const { slides } = response.data;
-      setSlides(slides);
+
+      if (slides.length > 0) {
+        setSlides(slides);
+      } else
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request.',
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
     } catch (error) {
-      zSlides.length > 0 && clearSlides();
+      zSlides?.length > 0 && clearSlides();
       console.error(error);
     }
   };
