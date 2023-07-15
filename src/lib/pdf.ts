@@ -30,7 +30,7 @@ export const handleConvertToPdfMultiple = async (
   urls: string[],
 ) => {
   if (!urls) {
-    console.error('No image URLs provided');
+    console.error('No image URLs provided.');
     return;
   }
 
