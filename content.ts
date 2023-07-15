@@ -7,7 +7,7 @@ interface DictionaryEntry {
 
 export const dictionary: Record<string, DictionaryEntry> = {
   en: {
-    homeHeader: 'Slidershare Downloader',
+    homeHeader: 'Slidershare Downloader!',
     homeSubtitle: 'Download SlideShare Online PDF, PPT, Images.',
     aboutHeader: 'About Me',
     aboutContent:

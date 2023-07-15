@@ -27,7 +27,7 @@ export const handleConvertToPdfSingle = async (url: string) => {
   }
 };
 export const handleConvertToPdfMultiple = async (
-  urls: string[] | undefined,
+  urls: string[],
 ) => {
   if (!urls) {
     console.error('No image URLs provided');
