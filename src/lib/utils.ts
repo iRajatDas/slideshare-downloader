@@ -37,43 +37,8 @@ export const getImageData = async (imageUrl: string): Promise<ImageData> => {
     });
   } catch (error) {
     // Fallback to the alternative method
-
-    return fetchImageDataAlternative(imageUrl);
+    throw new Error("SWW~!!!!!")
   }
 };
 
-export const fetchImageDataAlternative = async (
-  imageUrl: string,
-): Promise<ImageData> => {
-  try {
-    const response = await fetch(
-      `https://cors-anywhere.herokuapp.com/${imageUrl}`,
-      {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      },
-    );
-    const blob = await response.blob();
 
-    return new Promise<ImageData>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const image = new Image();
-        image.onload = () => {
-          resolve({
-            dataURL: reader.result as string,
-            width: image.width,
-            height: image.height,
-          });
-        };
-        image.onerror = reject;
-        image.src = reader.result as string;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    throw new Error('Failed to fetch or convert the image.');
-  }
-};
