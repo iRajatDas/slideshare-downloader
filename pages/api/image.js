@@ -1,6 +1,7 @@
-// pages/api/image.js
 import axios from 'axios';
 import NextCors from 'nextjs-cors';
+
+const SECRET_TOKEN = process.env.NEXT_PUBLIC_SECRET_TOKEN;
 
 export default async function handler(req, res) {
   // Run the cors middleware
@@ -13,6 +14,12 @@ export default async function handler(req, res) {
   });
 
   const { imageUrl } = req.query;
+  const { authorization } = req.headers;
+
+  // Verify the bearer token
+  if (authorization !== `Bearer ${SECRET_TOKEN}`) {
+    return res.status(401).send('Unauthorized');
+  }
 
   try {
     const response = await axios.get(imageUrl, {

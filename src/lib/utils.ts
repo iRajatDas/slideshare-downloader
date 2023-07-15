@@ -13,10 +13,11 @@ interface ImageData {
 
 export const getImageData = async (imageUrl: string): Promise<ImageData> => {
   try {
-    
-    const response = await fetch(
-      `/api/image?imageUrl=${imageUrl}`,
-    );
+    const response = await fetch(`/api/image?imageUrl=${imageUrl}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SECRET_TOKEN}`,
+      },
+    });
     const blob = await response.blob();
     const buffer = await blob.arrayBuffer();
     const base64 = Buffer.from(buffer).toString('base64');
@@ -38,8 +39,6 @@ export const getImageData = async (imageUrl: string): Promise<ImageData> => {
     });
   } catch (error) {
     // Fallback to the alternative method
-    throw new Error("SWW~!!!!!")
+    throw new Error('Something went wrong!');
   }
 };
-
-
