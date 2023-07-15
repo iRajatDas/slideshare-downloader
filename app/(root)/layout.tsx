@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
-import { defaultLocale } from '@/middleware';
 import Header from '@/components/global/header';
 import Footer from '@/components/global/footer';
 import '@/src/styles/globals.css';
@@ -13,13 +12,11 @@ const inter = Inter({
 
 export default function RootLayout({
   children,
-  params,
 }: {
   children: ReactNode;
-  params: { lang: string };
 }) {
   return (
-    <html lang={params.lang ?? defaultLocale}>
+    <html lang='en'>
       <body className={inter.className}>
         <div className="flex flex-col h-full min-h-full">
           <Header className="w-full max-w-6xl shrink-0" />

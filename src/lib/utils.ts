@@ -14,6 +14,39 @@ interface ImageData {
 export const getImageData = async (imageUrl: string): Promise<ImageData> => {
   try {
     const response = await fetch(
+      `/api/blob?url=${encodeURIComponent(imageUrl)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SECRET_TOKEN}`,
+        },
+      },
+    );
+    const data = await response.json();
+
+    return new Promise<ImageData>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        resolve({
+          dataURL: data.dataURL,
+          width: image.width,
+          height: image.height,
+        });
+      };
+      image.onerror = reject;
+      image.src = data.dataURL;
+    });
+  } catch (error) {
+    // Fallback to the alternative method
+
+    return fetchImageDataAlternative(imageUrl);
+  }
+};
+
+export const fetchImageDataAlternative = async (
+  imageUrl: string,
+): Promise<ImageData> => {
+  try {
+    const response = await fetch(
       `https://cors-anywhere.herokuapp.com/${imageUrl}`,
       {
         headers: {
@@ -41,39 +74,6 @@ export const getImageData = async (imageUrl: string): Promise<ImageData> => {
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    // Fallback to the alternative method
-    return fetchImageDataAlternative(imageUrl);
-  }
-};
-
-export const fetchImageDataAlternative = async (
-  imageUrl: string,
-): Promise<ImageData> => {
-  try {
-    const response = await fetch(
-      `/api/blob?url=${encodeURIComponent(imageUrl)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.SECRET_TOKEN}`,
-        },
-      },
-    );
-    const data = await response.json();
-
-    return new Promise<ImageData>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        resolve({
-          dataURL: data.dataURL,
-          width: image.width,
-          height: image.height,
-        });
-      };
-      image.onerror = reject;
-      image.src = data.dataURL;
-    });
-  } catch (error) {
     throw new Error('Failed to fetch or convert the image.');
   }
 };
-

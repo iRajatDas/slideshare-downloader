@@ -11,7 +11,7 @@ import {
   handleConvertToPdfSingle,
 } from '@/src/lib/pdf';
 import { toast } from './ui/use-toast';
-import { ToastAction } from '@radix-ui/react-toast';
+import { Checkbox } from './ui/checkbox';
 
 interface Slide {
   slug: string;
@@ -113,18 +113,21 @@ const DataGrid = () => {
 
   return (
     <section className="px-4 space-y-4">
-      <div className="flex items-center py-6 border px-4">
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
+      <div className="flex items-center py-3 rounded-lg border px-4">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="select"
             checked={selectAll}
-            onChange={handleSelectAll}
-            className="rounded border-gray-300 text-primary-brand focus:ring-primary-brand"
+            onCheckedChange={handleSelectAll}
           />
-          <span>
-            {selectedItems.length} / {data.length} selected
-          </span>
-        </label>
+          <label
+            htmlFor="select"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {selectedItems.length}/{data.length}
+          </label>
+        </div>
+
         <Button
           className="ml-auto bg-primary-brand hover:bg-primary-brand/90"
           onClick={handleDownloadAll}

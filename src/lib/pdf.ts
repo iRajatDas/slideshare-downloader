@@ -66,13 +66,13 @@ export const handleConvertToPdfMultiple = async (
   }
 };
 
-const createPdf = (width?: number, height?: number): jsPDF => {
+export const createPdf = (width?: number, height?: number): jsPDF => {
   const pdf = new jsPDF('portrait', 'px', 'a4');
   pdf.setProperties({ title: 'Converted PDF' });
   return pdf;
 };
 
-const calculatePdfDimensions = (
+export const calculatePdfDimensions = (
   pdfPageWidth: number,
   pdfPageHeight: number,
   imageWidth: number,
@@ -91,7 +91,7 @@ const calculatePdfDimensions = (
   return { pdfWidth, pdfHeight };
 };
 
-const calculateImagePosition = (
+export const calculateImagePosition = (
   pdfPageWidth: number,
   pdfWidth: number,
   pdfPageHeight: number,
