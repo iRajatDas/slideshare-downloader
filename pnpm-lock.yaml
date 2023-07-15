@@ -37,6 +37,9 @@ dependencies:
   '@radix-ui/react-toggle':
     specifier: ^1.0.3
     version: 1.0.3(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)
+  '@types/http-proxy':
+    specifier: ^1.17.11
+    version: 1.17.11
   '@types/node':
     specifier: 20.4.1
     version: 20.4.1
@@ -1186,6 +1189,12 @@ packages:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.3.2
     dev: true
+
+  /@types/http-proxy@1.17.11:
+    resolution: {integrity: sha512-HC8G7c1WmaF2ekqpnFq626xd3Zz0uvaqFmBJNRZCGEZCXkvSdJoNFn/8Ygbd9fKNQj8UzLdCETaI0UWPAjK7IA==}
+    dependencies:
+      '@types/node': 20.4.1
+    dev: false
 
   /@types/isomorphic-fetch@0.0.36:
     resolution: {integrity: sha512-ulw4d+vW1HKn4oErSmNN2HYEcHGq0N1C5exlrMM0CRqX1UUpFhGb5lwiom5j9KN3LBJJDLRmYIZz1ghm7FIzZw==}

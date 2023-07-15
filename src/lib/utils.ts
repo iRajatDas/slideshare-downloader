@@ -13,11 +13,18 @@ interface ImageData {
 
 export const getImageData = async (imageUrl: string): Promise<ImageData> => {
   try {
-    const response = await fetch(imageUrl);
+    const response = await fetch(
+      `https://cors-anywhere.herokuapp.com/${imageUrl}`,
+      {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      },
+    );
     const blob = await response.blob();
-    const reader = new FileReader();
 
     return new Promise<ImageData>((resolve, reject) => {
+      const reader = new FileReader();
       reader.onloadend = () => {
         const image = new Image();
         image.onload = () => {
@@ -34,6 +41,39 @@ export const getImageData = async (imageUrl: string): Promise<ImageData> => {
       reader.readAsDataURL(blob);
     });
   } catch (error) {
+    // Fallback to the alternative method
+    return fetchImageDataAlternative(imageUrl);
+  }
+};
+
+export const fetchImageDataAlternative = async (
+  imageUrl: string,
+): Promise<ImageData> => {
+  try {
+    const response = await fetch(
+      `/api/blob?url=${encodeURIComponent(imageUrl)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.SECRET_TOKEN}`,
+        },
+      },
+    );
+    const data = await response.json();
+
+    return new Promise<ImageData>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        resolve({
+          dataURL: data.dataURL,
+          width: image.width,
+          height: image.height,
+        });
+      };
+      image.onerror = reject;
+      image.src = data.dataURL;
+    });
+  } catch (error) {
     throw new Error('Failed to fetch or convert the image.');
   }
 };
+
