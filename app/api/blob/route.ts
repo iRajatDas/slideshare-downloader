@@ -24,7 +24,7 @@ export async function GET(req: Request, res: Response) {
     return NextResponse.json({ dataURL }, { status: response.status });
   } catch (error) {
     return NextResponse.json({
-      error: 'Failed to fetch or convert the image.',
+      error: 'Failed to fetch or convert the image. (OPPS!)',
     });
   }
 }
