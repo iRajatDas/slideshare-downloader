@@ -1,19 +1,16 @@
 import { NextResponse } from 'next/server';
 
-const SECRET_TOKEN = process.env.NEXT_PUBLIC_SECRET_TOKEN;
+// const SECRET_TOKEN = process.env.NEXT_PUBLIC_SECRET_TOKEN!!;
 
 export async function GET(req: Request, res: Response) {
   try {
     const { searchParams } = new URL(req.url);
     const imageUrl = searchParams.get('url') as string;
-    const authorizationHeader = req.headers.get('Authorization');
+    console.log(imageUrl)
 
-    // Check if the provided authorization header matches the expected secret token
-    if (authorizationHeader !== `Bearer ${SECRET_TOKEN}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const response = await fetch(imageUrl);
+    const response = await fetch(
+      `http://localhost:3000/api/image?imageUrl=https://image.slidesharecdn.com/introductiontocprogrammingppt-230111102957-39c93ea1/75/introduction-to-c-programming-language-1-2048.jpg?cb=1673433414`,
+    );
     const blob = await response.blob();
     const buffer = await blob.arrayBuffer();
     const base64 = Buffer.from(buffer).toString('base64');
