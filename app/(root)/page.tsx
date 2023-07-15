@@ -12,8 +12,8 @@ const _getSlides = async (url: string) => {
   console.log(slides);
 };
 
-async function Page({ params }: { params: { lang: string } }) {
-  const t = dictionary[params.lang];
+async function Page() {
+  const t = dictionary['en'];
   return (
     <div>
       <section className="py-12 md:py-20">
