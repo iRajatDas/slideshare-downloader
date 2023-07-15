@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import fetch from 'isomorphic-fetch';
 import { load } from 'cheerio';
 
 export interface SlideItem {
